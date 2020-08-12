@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import ImageCard from './ImageCard'
+import { connect } from 'react-redux'
+
 
 class ImageList extends Component {
     render(){
@@ -13,5 +15,12 @@ class ImageList extends Component {
         <div className="image-list">{html}</div>
         )
     }
+}   
+
+const mapStateToProps = state => {
+    return {
+        images: state.images
+    }
 }
-export default ImageList
+
+export default connect(mapStateToProps)(ImageList)

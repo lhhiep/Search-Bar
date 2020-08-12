@@ -1,4 +1,8 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { getTerm } from '../actions'
+import { getImages } from '../actions'
+import api from '../api/api'
 
 class Search extends Component{
     state = {
@@ -6,12 +10,16 @@ class Search extends Component{
     }
 
     handleChange = (event) => {
-        this.setState({ term: event.target.value })
+        
+        this.props.getTerm(event.target.value)
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
         event.preventDefault()
-        this.props.search(this.state.term)
+        const response = await api.get("/search/photos", {
+            params: { query: this.props.term, per_page: 30, page: Math.floor(Math.random() * 100) + 1 }
+        });
+        this.props.getImages(response.data.results)
     }
 
     render() {
@@ -20,6 +28,7 @@ class Search extends Component{
                 <form className="ui form" onSubmit={this.handleSubmit} >
                     <div className="field">
                         <label>Seach Image:</label>
+                        <h1> {this.props.term} </h1>
                         <input type="text" onChange={this.handleChange} />
                     </div>
                 </form>
@@ -27,4 +36,9 @@ class Search extends Component{
         )
     }
 }
-export default Search
+
+const mapStateToProps = (state) => {
+    return {term: state.term, images: state.images}
+}
+
+export default connect(mapStateToProps, {getTerm, getImages})(Search)
